@@ -1,0 +1,6 @@
+embeddings_cache/
+*.pyc
+__pycache__/
+.git/
+.gitignore
+README.md 

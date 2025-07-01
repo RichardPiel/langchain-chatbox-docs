@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chatbot PDF</title>
+    <script src="https://unpkg.com/vue@3"></script>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 2em;
+        background: #f4f4f4;
+      }
+      .chatbox {
+        background: white;
+        padding: 1em;
+        border-radius: 8px;
+        max-width: 600px;
+        margin: auto;
+      }
+      .bubble {
+        margin: 0.5em 0;
+      }
+      .user {
+        text-align: right;
+        color: #333;
+      }
+      .bot {
+        text-align: left;
+        color: #1a73e8;
+      }
+      input,
+      button {
+        padding: 0.5em;
+        font-size: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="chatbox">
+        <div class="bubble bot">
+          🤖 Bonjour ! Pose-moi une question sur le PDF.
+        </div>
+        <div v-for="msg in messages" :class="['bubble', msg.sender]">
+          {{ msg.text }}
+        </div>
+        <form @submit.prevent="ask">
+          <input
+            v-model="question"
+            placeholder="Ta question..."
+            style="width: 80%"
+          />
+          <button>Envoyer</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const { createApp } = Vue;
+      createApp({
+        data() {
+          return {
+            question: "",
+            messages: [],
+          };
+        },
+        methods: {
+          async ask() {
+            const q = this.question.trim();
+            if (!q) return;
+            this.messages.push({ text: q, sender: "user" });
+            this.question = "";
+            const res = await fetch("/ask", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ question: q }),
+            });
+            const data = await res.json();
+            this.messages.push({
+              text: data.answer || "Erreur...",
+              sender: "bot",
+            });
+          },
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>

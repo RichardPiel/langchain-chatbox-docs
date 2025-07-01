@@ -1,0 +1,9 @@
+langchain
+langchain-community
+langchain-openai
+openai
+faiss-cpu
+pypdf
+tiktoken
+fastapi
+uvicorn
